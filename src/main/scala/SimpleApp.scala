@@ -1,43 +1,62 @@
-import org.apache.spark.sql.SparkSession
-import org.codehaus.jackson.map.ObjectMapper // Changed import
+// No package statement to keep it in the default package for sbt run
 
-// Define the case class
-case class Person(name: String, age: Int)
+import org.apache.spark.sql.SparkSession
+import org.codehaus.jackson.map.ObjectMapper
+import com.example.domain.{Person, Car} // Import domain classes
+import com.example.services.JsonProcessor // Import service class
 
 object SimpleApp {
   def main(args: Array[String]): Unit = {
     val spark = SparkSession.builder
       .appName("SimpleSparkJacksonApp")
-      .master("local[*]") // Use local master for simplicity
+      .master("local[*]")
       .getOrCreate()
 
     import spark.implicits._
 
-    // Sample data: List of JSON strings
-    val jsonStrings = Seq(
+    // --- Original SimpleApp functionality (parsing a list of JSON strings for Person) ---
+    val jsonPersonStrings = Seq(
       """{"name":"Alice","age":30}""",
       """{"name":"Bob","age":25}""",
       """{"name":"Charlie","age":35}"""
     )
 
-    val data = spark.createDataset(jsonStrings)
+    val personData = spark.createDataset(jsonPersonStrings)
+    val personMapper = new ObjectMapper() // Standard mapper for Person
 
-    // Create an ObjectMapper instance (org.codehaus.jackson.map.ObjectMapper)
-    val mapper = new ObjectMapper()
-    // DefaultScalaModule is not used with Jackson 1.x's jackson-mapper-asl
-
-    val people = data.map(jsonString => {
-      // Attempt to parse JSON string to Person case class
-      // Jackson 1.x might have limitations with direct Scala case class mapping
-      // compared to Jackson 2.x with jackson-module-scala.
-      // This will deserialize to a Map if direct case class binding fails without further config.
-      // For this example, we'll keep it as is and see Spark's behavior.
-      // A more robust solution for Jackson 1.x with Scala might involve Java Beans or custom deserializers.
-      mapper.readValue(jsonString, classOf[Person])
+    println("--- Original Spark App: Parsed Person objects from inline list ---")
+    val peopleFromSparkList = personData.map(jsonString => {
+      personMapper.readValue(jsonString, classOf[Person])
     })
+    peopleFromSparkList.show()
 
-    println("Parsed Person objects:")
-    people.show()
+    // --- Demonstration of JsonProcessor ---
+    val carMapper = new ObjectMapper() // Standard mapper for Car
+    val jsonProcessor = new JsonProcessor(personMapper, carMapper)
+
+    val testPersonJson = """{"name":"Processor Test Person","age":55}"""
+    val testCarJson = """{"make":"Processor Test Car","model":"SUV","year":2024}"""
+
+    val parsedPerson = jsonProcessor.parsePerson(testPersonJson)
+    val parsedCar = jsonProcessor.parseCar(testCarJson)
+
+    println(s"--- JsonProcessor Demo ---")
+    println(s"Parsed Person via JsonProcessor: $parsedPerson")
+    println(s"Parsed Car via JsonProcessor: $parsedCar")
+
+    // Example of using JsonProcessor with Spark (if desired)
+    // This is similar to the original app logic but using the processor
+    val carJsonStrings = Seq(
+      """{"make":"Toyota","model":"Camry","year":2021}""",
+      """{"make":"Honda","model":"Civic","year":2022}"""
+    )
+    val carData = spark.createDataset(carJsonStrings)
+
+    println("--- JsonProcessor with Spark: Parsed Car objects ---")
+    val carsFromSparkList = carData.map(jsonString => {
+      jsonProcessor.parseCar(jsonString) // Using the carMapper via JsonProcessor
+    })
+    carsFromSparkList.show()
 
     spark.stop()
   }

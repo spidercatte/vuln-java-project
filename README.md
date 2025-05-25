@@ -1,11 +1,21 @@
 # Simple Spark Jackson Project
 
-This is a simple Spark project that demonstrates how to use Jackson Mapper ASL to parse JSON data.
+This is a simple Spark project that demonstrates how to use Jackson Mapper ASL (`org.codehaus.jackson:jackson-mapper-asl:1.9.13`) to parse JSON data within a Spark application. It also includes examples of organizing Scala code into packages and unit testing with ScalaTest.
+
+## Project Structure
+
+-   `src/main/scala/SimpleApp.scala`: Main application demonstrating Spark and `JsonProcessor` usage.
+-   `src/main/scala/com/example/domain/Person.scala`: Defines the `Person` case class.
+-   `src/main/scala/com/example/domain/Car.scala`: Defines the `Car` case class.
+-   `src/main/scala/com/example/services/JsonProcessor.scala`: Defines the `JsonProcessor` class for parsing `Person` and `Car` JSON.
+-   `src/test/scala/com/example/services/JsonProcessorSpec.scala`: Contains unit tests for `JsonProcessor`.
+-   `data/sample.json`: Sample JSON data file (demonstrates line-delimited JSON objects).
+-   `build.sbt`: sbt build configuration file.
 
 ## Prerequisites
 
-- Java Development Kit (JDK) 8 or later
-- sbt (Scala Build Tool)
+-   Java Development Kit (JDK) 8 or later
+-   sbt (Scala Build Tool)
 
 ## Building the Project
 
@@ -17,40 +27,34 @@ sbt clean compile
 
 ## Running the Application
 
+The `SimpleApp.scala` demonstrates:
+1.  Parsing a list of JSON strings into `Person` objects using Spark's map operation and a basic Jackson `ObjectMapper`.
+2.  Using the `JsonProcessor` (from `com.example.services`) to parse individual `Person` and `Car` JSON strings.
+3.  Using the `JsonProcessor` within a Spark `map` operation to parse a list of `Car` JSON strings.
+
 To run the Spark application, use the `sbt run` command:
 
 ```bash
 sbt run
 ```
-
-This will execute the `SimpleApp` main class. The application currently uses an inline JSON list.
+(This assumes `SimpleApp.scala` is in the default package or your `build.sbt` is configured to run it as the main class).
 
 ### Using the Sample JSON File
 
-The `SimpleApp.scala` can be modified to read from `data/sample.json`. To do this, you would change the data loading part of the `SimpleApp.scala` from:
+The `SimpleApp.scala` can be modified to read from `data/sample.json` for its Spark operations. (Refer to commented sections or adapt data loading as needed).
 
-```scala
-    // Sample data: List of JSON strings
-    val jsonStrings = Seq(
-      """{"name":"Alice","age":30}""",
-      """{"name":"Bob","age":25}""",
-      """{"name":"Charlie","age":35}"""
-    )
+## Running Tests
 
-    val data = spark.createDataset(jsonStrings)
+Unit tests for `JsonProcessor` are written using ScalaTest. To run the tests:
+
+```bash
+sbt test
 ```
-
-to something like:
-
-```scala
-    val data = spark.read.textFile("data/sample.json")
-```
-
-And then you would re-run `sbt run`.
 
 ## Dependencies
 
-- Spark Core
-- Spark SQL
-- Jackson Mapper ASL (org.codehaus.jackson:jackson-mapper-asl)
+-   Spark Core (`org.apache.spark:spark-core_2.12`)
+-   Spark SQL (`org.apache.spark:spark-sql_2.12`)
+-   Jackson Mapper ASL (`org.codehaus.jackson:jackson-mapper-asl:1.9.13`)
+-   ScalaTest (`org.scalatest:scalatest_2.12`) for unit testing.
 ```
