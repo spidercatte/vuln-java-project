@@ -52,5 +52,5 @@ And then you would re-run `sbt run`.
 
 - Spark Core
 - Spark SQL
-- Jackson Module Scala
+- Jackson Mapper ASL (org.codehaus.jackson:jackson-mapper-asl)
 ```

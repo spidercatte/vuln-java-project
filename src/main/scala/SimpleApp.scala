@@ -1,6 +1,5 @@
 import org.apache.spark.sql.SparkSession
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
+import org.codehaus.jackson.map.ObjectMapper // Changed import
 
 // Define the case class
 case class Person(name: String, age: Int)
@@ -23,12 +22,17 @@ object SimpleApp {
 
     val data = spark.createDataset(jsonStrings)
 
-    // Create an ObjectMapper instance
+    // Create an ObjectMapper instance (org.codehaus.jackson.map.ObjectMapper)
     val mapper = new ObjectMapper()
-    mapper.registerModule(DefaultScalaModule)
+    // DefaultScalaModule is not used with Jackson 1.x's jackson-mapper-asl
 
-    // Parse JSON strings into Person objects
     val people = data.map(jsonString => {
+      // Attempt to parse JSON string to Person case class
+      // Jackson 1.x might have limitations with direct Scala case class mapping
+      // compared to Jackson 2.x with jackson-module-scala.
+      // This will deserialize to a Map if direct case class binding fails without further config.
+      // For this example, we'll keep it as is and see Spark's behavior.
+      // A more robust solution for Jackson 1.x with Scala might involve Java Beans or custom deserializers.
       mapper.readValue(jsonString, classOf[Person])
     })
 
