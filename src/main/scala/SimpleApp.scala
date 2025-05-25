@@ -1,7 +1,8 @@
 // No package statement to keep it in the default package for sbt run
 
 import org.apache.spark.sql.SparkSession
-import org.codehaus.jackson.map.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper // Updated
+import com.fasterxml.jackson.module.scala.DefaultScalaModule // Added
 import com.example.domain.{Person, Car} // Import domain classes
 import com.example.services.JsonProcessor // Import service class
 
@@ -22,7 +23,7 @@ object SimpleApp {
     )
 
     val personData = spark.createDataset(jsonPersonStrings)
-    val personMapper = new ObjectMapper() // Standard mapper for Person
+    val personMapper = new ObjectMapper().registerModule(DefaultScalaModule) // New way
 
     println("--- Original Spark App: Parsed Person objects from inline list ---")
     val peopleFromSparkList = personData.map(jsonString => {
@@ -31,7 +32,7 @@ object SimpleApp {
     peopleFromSparkList.show()
 
     // --- Demonstration of JsonProcessor ---
-    val carMapper = new ObjectMapper() // Standard mapper for Car
+    val carMapper = new ObjectMapper().registerModule(DefaultScalaModule) // New way
     val jsonProcessor = new JsonProcessor(personMapper, carMapper)
 
     val testPersonJson = """{"name":"Processor Test Person","age":55}"""

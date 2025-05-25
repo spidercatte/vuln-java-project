@@ -1,7 +1,7 @@
 package com.example.services
 
-import com.example.domain.{Car, Person} // Import Person and Car from domain package
-import org.codehaus.jackson.map.ObjectMapper
+import com.example.domain.{Car, Person}
+import com.fasterxml.jackson.databind.ObjectMapper // Updated import
 
 class JsonProcessor(personMapper: ObjectMapper, carMapper: ObjectMapper) {
 

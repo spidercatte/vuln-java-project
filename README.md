@@ -1,6 +1,6 @@
 # Simple Spark Jackson Project
 
-This is a simple Spark project that demonstrates how to use Jackson Mapper ASL (`org.codehaus.jackson:jackson-mapper-asl:1.9.13`) to parse JSON data within a Spark application. It also includes examples of organizing Scala code into packages and unit testing with ScalaTest.
+This is a simple Spark project that demonstrates how to use Jackson (`com.fasterxml.jackson`) to parse JSON data within a Spark application. It also includes examples of organizing Scala code into packages and unit testing with ScalaTest.
 
 ## Project Structure
 
@@ -55,6 +55,7 @@ sbt test
 
 -   Spark Core (`org.apache.spark:spark-core_2.12`)
 -   Spark SQL (`org.apache.spark:spark-sql_2.12`)
--   Jackson Mapper ASL (`org.codehaus.jackson:jackson-mapper-asl:1.9.13`)
+-   Jackson Databind (`com.fasterxml.jackson.core:jackson-databind:2.13.5`)
+-   Jackson Module Scala (`com.fasterxml.jackson.module:jackson-module-scala_2.12:2.13.5`)
 -   ScalaTest (`org.scalatest:scalatest_2.12`) for unit testing.
 ```
